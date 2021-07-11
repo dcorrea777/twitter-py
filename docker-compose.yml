@@ -1,0 +1,29 @@
+version: '3.7'
+
+networks:
+    application:
+        name: application
+        driver: bridge
+services:
+    dynamodb:
+        image: amazon/dynamodb-local:latest
+        container_name: dynamodb
+        working_dir: /home/dynamodblocal
+        command: "-jar DynamoDBLocal.jar -inMemory"
+        ports:
+            - 8000:8000
+        networks:
+            - application            
+    app:
+        image: dcorrea/python:3.8
+        container_name: app
+        depends_on: 
+            - dynamodb
+        volumes:
+            - .:/home/python/app
+        networks:
+            - application
+        environment: 
+            AWS_ACCESS_KEY_ID: MyFakeAccessKey
+            AWS_SECRET_ACCESS_KEY: MyFakeSecretAccessKey
+            AWS_DEFAULT_REGION: us-east-1
